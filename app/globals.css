@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+:root {
+  --amber:       #C8882A;
+  --amber-lt:    #D4924A;
+  --amber-pale:  rgba(200, 136, 42, 0.08);
+  --amber-dk:    #a86e1e;
+  --ink:         rgba(160, 95, 15, 0.92);
+  --ink-lt:      rgba(247, 243, 238, 0.6);
+  --stone:       rgba(247, 243, 238, 0.45);
+  --stone-lt:    rgba(247, 243, 238, 0.28);
+  --border:      rgba(247, 243, 238, 0.08);
+  --bg:          #0a0908;
+  --bg-alt:      #0e0d0b;
+  --white:       #111009;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Montserrat', system-ui, sans-serif;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes scrollpulse {
+  0%,100% { opacity: 0.3; transform: scaleY(0.7); }
+  50%     { opacity: 1;   transform: scaleY(1); }
+}
+
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slidedown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+img { display: block; max-width: 100%; }
+button { cursor: pointer; font-family: inherit; }
+a { color: inherit; }
+input, textarea { font-family: inherit; }
