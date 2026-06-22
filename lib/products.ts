@@ -120,7 +120,7 @@ export const DEMO_PRODUCTS: Product[] = [
     slug:"nomad-dac",
   },
   {
-    _id:"9", title:"Cascade Open-Back Headphone", category:"Headphones",
+    _id:"9", title:"Cascade Open-Back Headphone 1", category:"Headphones",
     priceText:"$2,400", brand:"Cascade Audio", origin:"Austria", warranty:"3 Years",
     imageUrl:"https://images.unsplash.com/photo-1546435770-a3e426bf472b",
     galleryUrls:[
