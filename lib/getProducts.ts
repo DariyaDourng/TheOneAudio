@@ -1,12 +1,16 @@
 /**
- * getProducts.ts (Robust Google Sheets Version)
+ * getProducts.ts
  * ─────────────────────────────────────────────────────────────
- * Fetches products from Google Sheets (published as CSV).
- * Handles formatting edge-cases (\r\n) and adds explicit logging.
+ * Forces dynamic execution and strips Next.js data caching
+ * to guarantee that data loads directly from Google Sheets.
  * ─────────────────────────────────────────────────────────────
  */
 
 import { DEMO_PRODUCTS, Product } from "./products";
+
+// Tells Next.js to never statically bake this page/data during the build phase
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const SHEET_CSV_URL = process.env.GOOGLE_SHEET_CSV_URL || "";
 
@@ -14,8 +18,6 @@ function parseCSVLine(line: string): string[] {
   const result: string[] = [];
   let current = "";
   let inQuotes = false;
-
-  // Remove any hidden carriage returns (\r) from Windows line endings
   const cleanLine = line.replace(/\r/g, "");
 
   for (let i = 0; i < cleanLine.length; i++) {
@@ -39,15 +41,13 @@ function parseCSVLine(line: string): string[] {
 }
 
 function parseCSV(csv: string): Product[] {
-  // Split securely by newline, ignoring completely empty lines
   const lines = csv.split("\n").map(l => l.trim()).filter(Boolean);
   if (lines.length <= 1) return [];
 
   return lines
-    .slice(1) // Skip your header row
+    .slice(1) // Skip csv headers
     .map((line, index) => {
       const cols = parseCSVLine(line);
-
       const [
         title       = "",
         slug        = "",
@@ -79,44 +79,36 @@ function parseCSV(csv: string): Product[] {
         specs:       specsRaw ? specsRaw.split("|").map(s => s.trim()).filter(Boolean) : [],
       } as Product;
     })
-    // Ensure both Title and Image exist, otherwise row is invalid
-    .filter(p => {
-      const isValid = Boolean(p.title && p.imageUrl);
-      if (!isValid) {
-        console.warn(`⚠️ Skipping row because it is missing Title or ImageUrl.`);
-      }
-      return isValid;
-    });
+    .filter(p => Boolean(p.title && p.imageUrl));
 }
 
 export async function getProducts(): Promise<Product[]> {
+  // Fallback diagnostic logging
   if (!SHEET_CSV_URL) {
-    console.error("ERROR: GOOGLE_SHEET_CSV_URL environment variable is totally empty!");
+    console.error("GOOGLE_SHEET_CSV_URL is missing from environment variables.");
     return DEMO_PRODUCTS;
   }
 
   try {
-    console.log(`📡 Fetching from Google Sheets URL...`);
-    const res = await fetch(SHEET_CSV_URL, {
-      cache: 'no-store' // Forces Next.js to ignore old caches during debugging
+    // cache: 'no-store' instructs Vercel Data Cache to bypass saving this request
+    const res = await fetch(SHEET_CSV_URL, { 
+      cache: "no-store",
+      next: { revalidate: 0 } 
     });
 
-    if (!res.ok) {
-      throw new Error(`Google Sheets responded with HTTP status ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
 
     const csv = await res.text();
     const products = parseCSV(csv);
 
     if (products.length === 0) {
-      console.warn("Google Sheet connected, but parsed 0 valid products. Using fallback.");
+      console.warn("CSV parsed 0 items. Ensure columns align with parser keys.");
       return DEMO_PRODUCTS;
     }
 
-    console.log(`SUCCESS: Loaded ${products.length} products dynamically from Google Sheets.`);
     return products;
   } catch (err) {
-    console.error("CRITICAL: Fetching Google Sheet failed entirely.", err);
+    console.error("Failed to pull live Google Sheet rows:", err);
     return DEMO_PRODUCTS;
   }
 }
