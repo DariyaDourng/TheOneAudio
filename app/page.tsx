@@ -1,28 +1,20 @@
-"use client";
 import Link from "next/link";
 import { Nav } from "@/components/Nav";
-import { DEMO_PRODUCTS, CATEGORIES } from "@/lib/products";
-import { ArrowRight, MapPin, Phone, Mail, Star, Shield, Headphones } from "lucide-react";
+import { CATEGORIES } from "@/lib/products";
+import { getProducts } from "@/lib/getProducts";
+import { ArrowRight, Star, Shield, Headphones } from "lucide-react";
 import Footer from "@/components/Footer";
 
-const FacebookIcon = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-  </svg>
-);
-
-const InstagramIcon = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-    <circle cx="12" cy="12" r="4" />
-    <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
-  </svg>
-);
+// Force Next.js to skip caching and run completely dynamic
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const MARQUEE = ["High-Fidelity Audio","Phnom Penh","Est. 2019","Amplifiers","Turntables","Loudspeakers","Headphones","DAC & Streamers","Phono Stages","Cables"];
 
-export default function Page() {
-  const featured = DEMO_PRODUCTS.slice(0, 3);
+export default async function Page() {
+  // Fetch real-time products data safely on the server side
+  const products = await getProducts();
+  const featured = products.slice(0, 3);
 
   return (
     <div style={{ 
@@ -31,8 +23,8 @@ export default function Page() {
       textAlign: "left",
       color: "rgba(247,243,238,0.9)"
     }}>
-      {/* Global Styles for Typography and Navbar Opacity */}
-      <style jsx global>{`
+      {/* Native CSS Injection to fix the styled-jsx limitation in Server Components */}
+      <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
         
         * {
@@ -47,13 +39,12 @@ export default function Page() {
           font-weight: 500 !important;
         }
 
-        /* Target the Nav/Header to make it less transparent */
         nav, header, .nav-container {
           background-color: rgba(10, 9, 8, 0.95) !important;
           backdrop-filter: blur(10px) !important;
           border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
         }
-      `}</style>
+      `}} />
       
       <Nav />
 
@@ -79,7 +70,7 @@ export default function Page() {
           width: "100%", maxWidth: 1200, margin: "0 auto",
           padding: "clamp(4rem,10vw,8rem) clamp(1rem,4vw,2.5rem)",
         }}>
-          <div style={{ maxWidth: "600px", animation: "fadein 0.9s ease both" }}>
+          <div style={{ maxWidth: "600px" }}>
             <p style={{
               display: "inline-flex", alignItems: "center", gap: "0.6rem",
               fontSize: "0.55rem", letterSpacing: "0.25em",
@@ -118,24 +109,16 @@ export default function Page() {
                 letterSpacing: "0.15em", textTransform: "uppercase",
                 padding: "0.9rem 1.8rem",
                 display: "inline-flex", alignItems: "center", gap: "0.5rem",
-                transition: "all 0.2s",
                 fontWeight: 700
-              }}
-                onMouseEnter={e => (e.currentTarget.style.background = "var(--amber-dk)")}
-                onMouseLeave={e => (e.currentTarget.style.background = "var(--amber)")}
-              >Explore Collection</Link>
+              }}>Explore Collection</Link>
 
               <a href="#about" style={{
                 color: "rgba(255,255,255,0.8)",
                 textDecoration: "none", fontSize: "0.65rem",
                 letterSpacing: "0.15em", textTransform: "uppercase",
                 display: "inline-flex", alignItems: "center", gap: "0.5rem",
-                transition: "color 0.2s",
                 fontWeight: 600
-              }}
-                onMouseEnter={e => (e.currentTarget.style.color = "#fff")}
-                onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.8)")}
-              >Our Story <ArrowRight size={14} /></a>
+              }}>Our Story <ArrowRight size={14} /></a>
             </div>
           </div>
         </div>
@@ -148,7 +131,7 @@ export default function Page() {
         padding: "0.6rem 0", overflow: "hidden",
         background: "rgba(255,255,255,0.01)",
       }}>
-        <div style={{ display: "flex", gap: "2rem", animation: "marquee 30s linear infinite", whiteSpace: "nowrap" }}>
+        <div style={{ display: "flex", gap: "2rem", whiteSpace: "nowrap" }}>
           {[...MARQUEE, ...MARQUEE].map((item, i) => (
             <span key={i} style={{
               fontSize: "0.55rem", letterSpacing: "0.2em", textTransform: "uppercase",
@@ -180,7 +163,7 @@ export default function Page() {
           }}>View All <ArrowRight size={12} /></Link>
         </div>
 
-        {/* Category pills */}
+        {/* Category pills Bar */}
         <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "2rem" }}>
           {CATEGORIES.filter(c => c !== "All").map(cat => (
             <Link key={cat} href={`/collection?category=${encodeURIComponent(cat)}`} style={{
@@ -188,21 +171,18 @@ export default function Page() {
               padding: "0.4rem 0.8rem",
               border: "1px solid rgba(255,255,255,0.1)",
               background: "rgba(255,255,255,0.02)", color: "rgba(255,255,255,0.5)",
-              textDecoration: "none", transition: "all 0.2s",
+              textDecoration: "none",
               whiteSpace: "nowrap",
               fontWeight: 600
-            }}
-              onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = "var(--amber)"; el.style.color = "var(--amber)"; }}
-              onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = "rgba(255,255,255,0.1)"; el.style.color = "rgba(255,255,255,0.5)"; }}
-            >{cat}</Link>
+            }}>{cat}</Link>
           ))}
         </div>
 
-        {/* 3-col grid */}
+        {/* 3-column Catalog Card Display Grid */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(100%,280px),1fr))", gap: "1.5rem" }}>
           {featured.map(p => (
             <Link key={p._id} href={`/product/${p.slug}`} style={{ textDecoration: "none", color: "inherit" }}>
-              <article style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", overflow: "hidden", transition: "all 0.3s" }}>
+              <article style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", overflow: "hidden" }}>
                 <div style={{ position: "relative", aspectRatio: "4/3", overflow: "hidden" }}>
                   <img src={`${p.imageUrl}?w=600&auto=format&fit=crop&q=80`} alt={p.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   {p.badge && (
@@ -276,7 +256,6 @@ export default function Page() {
         </div>
       </section>
 
-      {/* ═══ FOOTER ═══ */}
       <Footer />
     </div>
   );
