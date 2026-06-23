@@ -22,8 +22,8 @@ export function Nav() {
     { label: "Contact",    href: "/#footer" },
   ];
 
-  // Intercepts local homepage hash link routing 
-  const handleScrollLink = (e, href) => {
+  // Explicitly typed 'e' as a React MouseEvent for HTML anchor elements
+  const handleScrollLink = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (href.startsWith("/#") && pathname === "/") {
       e.preventDefault();
       const targetId = href.replace("/#", "");
@@ -97,6 +97,7 @@ export function Nav() {
                 href="https://m.me/theoneaudioca" 
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(e) => handleScrollLink(e, "https://m.me/theoneaudioca")}
                 style={{
                   fontSize: "0.65rem", letterSpacing: "0.14em",
                   textTransform: "uppercase", fontWeight: 600,
@@ -155,7 +156,10 @@ export function Nav() {
               href="https://m.me/theoneaudioca" 
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => setOpen(false)} 
+              onClick={(e) => {
+                setOpen(false);
+                handleScrollLink(e, "https://m.me/theoneaudioca");
+              }} 
               style={{
                 display: "block", marginTop: "1rem",
                 border: "1px solid var(--amber)", color: "var(--amber)",
