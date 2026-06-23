@@ -13,9 +13,13 @@ const InstagramIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
 );
 
+const MessengerIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2C6.477 2 2 6.145 2 11.25c0 2.908 1.448 5.495 3.714 7.152.148.108.236.28.23.465l-.03 1.583c-.006.386.38.675.744.542l1.79-.654a.61.61 0 0 1 .454.025C10.05 20.844 11.012 21 12 21c5.523 0 10-4.145 10-9.25S17.523 2 12 2zm1.03 12.03-2.122-2.262-4.135 2.262 4.548-4.83 2.122 2.262 4.135-2.262-4.548 4.83z"/></svg>
+);
+
 export default function Footer() {
   return (
-    <footer style={{ background: "rgba(247,243,238,0.02)", borderTop: "1px solid rgba(247,243,238,0.06)" }}>
+    <footer style={{ background: "rgba(247,243,238,0.02)", borderTop: "1px solid rgba(247,243,238,0.06)" }} id="footer">
       {/* Upper footer */}
       <div style={{
         maxWidth: 1280, margin: "0 auto",
@@ -41,12 +45,17 @@ export default function Footer() {
           <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.25rem" }}>
             {[
               {
-                href: "https://facebook.com",
+                href: "https://www.facebook.com/theoneaudioca",
                 label: "Facebook",
                 icon: <FacebookIcon />,
               },
               {
-                href: "https://instagram.com",
+                href: "https://m.me/theoneaudioca", // Update this if your Messenger link matches a specific username/page id
+                label: "Messenger",
+                icon: <MessengerIcon />,
+              },
+              {
+                href: "https://www.instagram.com/theoneaudio.speakers",
                 label: "Instagram",
                 icon: <InstagramIcon />,
               },
@@ -107,16 +116,33 @@ export default function Footer() {
         <div>
           <p style={{ fontSize: "0.55rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "var(--amber)", fontWeight: 700, marginBottom: "1.2rem" }}>Contact</p>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
-            {[
-              { icon: <MapPin size={13} color="var(--amber)" />, text: "Phnom Penh, Cambodia" },
-              { icon: <Phone  size={13} color="var(--amber)" />, text: "+855 12 345 678" },
-              { icon: <Mail   size={13} color="var(--amber)" />, text: "hello@theoneaudio.com" },
-            ].map(({ icon, text }) => (
-              <div key={text} style={{ display: "flex", alignItems: "center", gap: "0.65rem", fontSize: "0.78rem", color: "rgba(247,243,238,0.32)", fontWeight: 400 }}>
-                {icon}
-                {text}
-              </div>
-            ))}
+            
+            {/* Address */}
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "0.65rem", fontSize: "0.78rem", color: "rgba(247,243,238,0.32)", fontWeight: 400, lineHeight: "1.4" }}>
+              <div style={{ marginTop: "2px" }}><MapPin size={13} color="var(--amber)" /></div>
+              <span>#133J, St. 271z, SangKat O'bek Om, Khan Sen Sok, Phnom Penh, Cambodia, 102101</span>
+            </div>
+
+            {/* Click-to-Call Phone Router Link */}
+            <a 
+              href="tel:+85586454231" 
+              style={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: "0.65rem", 
+                fontSize: "0.78rem", 
+                color: "rgba(247,243,238,0.32)", 
+                fontWeight: 400,
+                textDecoration: "none",
+                transition: "color 0.2s"
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = "rgba(247,243,238,0.75)")}
+              onMouseLeave={e => (e.currentTarget.style.color = "rgba(247,243,238,0.32)")}
+            >
+              <Phone size={13} color="var(--amber)" />
+              +855 86 454 231
+            </a>
+
           </div>
         </div>
       </div>

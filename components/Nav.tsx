@@ -1,11 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
 export function Nav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -17,8 +19,21 @@ export function Nav() {
     { label: "Collection", href: "/collection" },
     { label: "About",      href: "/#about" },
     { label: "Philosophy", href: "/#philosophy" },
-    { label: "Contact",    href: "/#contact" },
+    { label: "Contact",    href: "/#footer" },
   ];
+
+  // Intercepts local homepage hash link routing 
+  const handleScrollLink = (e, href) => {
+    if (href.startsWith("/#") && pathname === "/") {
+      e.preventDefault();
+      const targetId = href.replace("/#", "");
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+        setOpen(false); // Close mobile tray
+      }
+    }
+  };
 
   return (
     <>
@@ -38,10 +53,7 @@ export function Nav() {
 
           {/* Logo */}
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: "0.65rem", textDecoration: "none" }}>
-            <svg width="34" height="34" viewBox="0 0 38 38" fill="none" aria-hidden="true">
-              <circle cx="19" cy="19" r="17.5" stroke="#C8882A" strokeWidth="1.5" />
-              <path d="M22 9.5L16 13.5V28.5H21V15.5L24.5 13L22 9.5Z" fill="#C8882A" />
-            </svg>
+            <img src="../images/TheOneAudio.png" alt="The One Audio Logo" style={{ height: "50px", width: "auto", borderRadius: "50%" }} />
             <div>
               <span style={{
                 display: "block",
@@ -63,6 +75,7 @@ export function Nav() {
               <li key={l.label}>
                 <Link
                   href={l.href}
+                  onClick={(e) => handleScrollLink(e, l.href)}
                   style={{
                     fontSize: "0.72rem",
                     letterSpacing: "0.18em",
@@ -79,18 +92,23 @@ export function Nav() {
               </li>
             ))}
             <li>
-              <Link href="/#contact" style={{
-                fontSize: "0.65rem", letterSpacing: "0.14em",
-                textTransform: "uppercase", fontWeight: 600,
-                color: "var(--amber)",
-                border: "1px solid var(--amber)",
-                textDecoration: "none", padding: "0.5rem 1.3rem",
-                display: "inline-block",
-                transition: "background 0.2s, color 0.2s",
-              }}
+              {/* Enquire Button - Routed directly to Messenger */}
+              <a 
+                href="https://m.me/theoneaudioca" 
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: "0.65rem", letterSpacing: "0.14em",
+                  textTransform: "uppercase", fontWeight: 600,
+                  color: "var(--amber)",
+                  border: "1px solid var(--amber)",
+                  textDecoration: "none", padding: "0.5rem 1.3rem",
+                  display: "inline-block",
+                  transition: "background 0.2s, color 0.2s",
+                }}
                 onMouseEnter={e => { e.currentTarget.style.background = "var(--amber)"; e.currentTarget.style.color = "#fff"; }}
                 onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--amber)"; }}
-              >Enquire</Link>
+              >Enquire</a>
             </li>
           </ul>
 
@@ -119,7 +137,7 @@ export function Nav() {
           }} className="mobile-nav">
             {links.map(l => (
               <Link key={l.label} href={l.href}
-                onClick={() => setOpen(false)}
+                onClick={(e) => handleScrollLink(e, l.href)}
                 style={{
                   display: "block", padding: "0.75rem 0",
                   fontSize: "0.72rem", letterSpacing: "0.18em",
@@ -132,14 +150,21 @@ export function Nav() {
                 onMouseLeave={e => (e.currentTarget.style.color = "rgba(247,243,238,0.6)")}
               >{l.label}</Link>
             ))}
-            <Link href="/#contact" onClick={() => setOpen(false)} style={{
-              display: "block", marginTop: "1rem",
-              border: "1px solid var(--amber)", color: "var(--amber)",
-              textDecoration: "none", padding: "0.85rem",
-              fontSize: "0.7rem", letterSpacing: "0.16em",
-              textTransform: "uppercase", fontWeight: 600,
-              textAlign: "center",
-            }}>Enquire Now</Link>
+            {/* Mobile Enquire Button - Routed directly to Messenger */}
+            <a 
+              href="https://m.me/theoneaudioca" 
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)} 
+              style={{
+                display: "block", marginTop: "1rem",
+                border: "1px solid var(--amber)", color: "var(--amber)",
+                textDecoration: "none", padding: "0.85rem",
+                fontSize: "0.7rem", letterSpacing: "0.16em",
+                textTransform: "uppercase", fontWeight: 600,
+                textAlign: "center",
+              }}
+            >Enquire Now</a>
           </div>
         )}
       </nav>
